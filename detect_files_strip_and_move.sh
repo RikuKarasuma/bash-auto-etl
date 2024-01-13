@@ -55,4 +55,12 @@ find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type
 done;
 
 echo;
-echo Completed.;
+echo Completed transfers.;
+
+echo;
+echo Beginning clean up...;
+
+rm -rf $from/*;
+
+echo;
+echo Clean up completed;
