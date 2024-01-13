@@ -12,15 +12,14 @@ file_type_1="";
 file_type_2="";
 file_type_3="";
 
-# If there is a portion of the file name you wish to strip away (up until the extension)
-# place a capture group here.
-strip_after_point="";
-
 if [ -z "$file_type_1" ] && [ -z "$file_type_2" ] && [ -z "$file_type_3" ]; then
     echo "ERROR: You should include file types to grab or else this program won't work!!";
     exit 1;
 fi;
 
+# If there is a portion of the file name you wish to strip away (up until the extension)
+# place a capture group here.
+strip_after_point="";
 
 # Capture params.
 from=$1;
@@ -40,10 +39,9 @@ find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type
 if [ -n "$strip_after_point" ]; then
     # Next remove any nonsense between the name and the extension.
     find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/(?<!^)('$strip_after_point').*(?=.*\.)/$1/g' {} \;
+    # Finally remove the last extra space in between the name and the extension.
+    find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/ +(\.[^>]+)$/$1/g' {} \;
 fi;
-
-# Finally remove the last extra space in between the name and the extension.
-find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/ +(\.[^.]+)$/$1/g' {} \;
 
 echo Sanitizing finished.;
 echo;
