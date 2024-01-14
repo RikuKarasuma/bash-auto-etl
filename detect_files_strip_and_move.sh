@@ -31,16 +31,21 @@ echo $move_to;
 echo;
 echo Sanitizing names...;
 
+find_files_and_rename(){
+    regex_str=$1;
+    find $from -maxdepth 2 -type f \( -iname "$file_type_1" -o -iname "$file_type_2" -o -iname "$file_type_3" \) -execdir rename -v "$regex_str" {} \;
+}
+
 # First remove invalid periods.
-find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "{$file_type_3}" \) -execdir rename -v 's/(?<!^)\.(?=.*\.)/ /g' {} \;
+find_files_and_rename 's/(?<!^)\.(?=.*\.)/ /g';
 # Then Remove special characters.
-find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/[^A-Za-z0-9 \.\/]//g' {} \;
+find_files_and_rename 's/[^A-Za-z0-9 \.\/]//g';
 
 if [ -n "$strip_after_point" ]; then
     # Next remove any nonsense between the name and the extension.
-    find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/(?<!^)('$strip_after_point').*(?=.*\.)/$1/g' {} \;
+    find_files_and_rename 's/(?<!^)('$strip_after_point').*(?=.*\.)/$1/g';
     # Finally remove the last extra space in between the name and the extension.
-    find $from -maxdepth 2 -type f \( -iname "${file_type_1}" -o -iname "${file_type_2}" -o -iname "${file_type_3}" \) -execdir rename -v 's/ +(\.[^>]+)$/$1/g' {} \;
+    find_files_and_rename 's/ +(\.[^>]+)$/$1/g';
 fi;
 
 echo Sanitizing finished.;
